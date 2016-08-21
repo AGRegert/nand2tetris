@@ -42,19 +42,25 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
-   Mux16 (a=x, b=false, sel=zx, out=zeroX);
-   Not16 (in=zeroX, out=notX);
-   Mux16 (a=zeroX, b=notX, sel=nx, out=readyX);
+    Mux16 (a=x, b=false, sel=zx, out=zeroX);
+    Not16 (in=zeroX, out=notX);
+    Mux16 (a=zeroX, b=notX, sel=nx, out=readyX);
    
-   Mux16 (a=y, b=false, sel=zy, out=zeroY);
-   Not16 (in=zeroY, out=notY);
-   Mux16 (a=zeroY, b=notY, sel=ny, out=readyY);
+    Mux16 (a=y, b=false, sel=zy, out=zeroY);
+    Not16 (in=zeroY, out=notY);
+    Mux16 (a=zeroY, b=notY, sel=ny, out=readyY);
    
-   And16 (a=readyX, b=readyY, out=andXY);
-   Add16 (a=readyX, b=readyY, out=sumXY);
-   Mux16 (a=andXY, b=sumXY, sel=f, out=outXY);
+    And16 (a=readyX, b=readyY, out=andXY);
+    Add16 (a=readyX, b=readyY, out=sumXY);
+    Mux16 (a=andXY, b=sumXY, sel=f, out=outXY);
 
-   Not16 (in=outXY, out=notXY);
-   Mux16 (a=outXY, b=notXY, sel=no, out=out);
+    Not16 (in=outXY, out=notXY);
+    Mux16 (a=outXY, b=notXY, sel=no, out=outDuplicate, out=out);
+    
+    And16 (a=outDuplicate, b[0..7]=false, b[8..15]=true, out=outNEG);
+    And16 (a=outDuplicate, b[0..7]=true, b[8..15]=false, out=outPOS);
+    Or16Way (in=outNEG, out=ngDuplicate, out=ng);
+    Or16Way (in=outPOS, out=ps);
+    Or (a=ngDuplicate, b=ps, out=ngOrPs);
+    Not (in=ngOrPs, out=zr);
 }
