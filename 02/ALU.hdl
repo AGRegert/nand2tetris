@@ -43,4 +43,18 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+   Mux16 (a=x, b=false, sel=zx, out=zeroX);
+   Not16 (in=zeroX, out=notX);
+   Mux16 (a=zeroX, b=notX, sel=nx, out=readyX);
+   
+   Mux16 (a=y, b=false, sel=zy, out=zeroY);
+   Not16 (in=zeroY, out=notY);
+   Mux16 (a=zeroY, b=notY, sel=ny, out=readyY);
+   
+   And16 (a=readyX, b=readyY, out=andXY);
+   Add16 (a=readyX, b=readyY, out=sumXY);
+   Mux16 (a=andXY, b=sumXY, sel=f, out=outXY);
+
+   Not16 (in=outXY, out=notXY);
+   Mux16 (a=outXY, b=notXY, sel=no, out=out);
 }
